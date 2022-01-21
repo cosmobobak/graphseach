@@ -1,4 +1,4 @@
-# graphseach
+# graphsearch
 
 ## Graph search algorithms for INF2D Reasoning and Agents.
 
