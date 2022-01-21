@@ -2,10 +2,7 @@ use std::collections::VecDeque;
 
 use crate::graph::{Graph, Node};
 
-
-
-
-fn bfs(mut graph: Graph, root: Node) -> Option<Node> {
+pub fn bfs(graph: &mut Graph, root: Node) -> Option<Node> {
     let mut queue = VecDeque::new();
     graph.visit(root);
     queue.push_back(root);
@@ -21,5 +18,17 @@ fn bfs(mut graph: Graph, root: Node) -> Option<Node> {
         }
     }
     None
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{graph, bfs};
+
+    #[test]
+    fn check_bfs() {
+        let mut graph = graph::get_example_graph();
+        let goal = graph.goal();
+        assert_eq!(bfs::bfs(&mut graph, goal), Some(goal));
+    }
 }
 

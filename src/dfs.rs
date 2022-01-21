@@ -2,7 +2,8 @@ use crate::graph::{Graph, Node};
 
 
 
-fn dfs(graph: &Graph, root: Node) -> Option<Node> {
+pub fn dfs(graph: &mut Graph, root: Node) -> Option<Node> {
+    graph.visit(root);
     if graph.is_goal(root) {
         return Some(root);
     }
@@ -14,7 +15,8 @@ fn dfs(graph: &Graph, root: Node) -> Option<Node> {
     None
 }
 
-fn depth_limited_dfs(graph: &Graph, root: Node, depth: usize) -> Option<Node> {
+fn depth_limited_dfs(graph: &mut Graph, root: Node, depth: usize) -> Option<Node> {
+    graph.visit(root);
     if depth == 0 {
         return None;
     }
@@ -29,11 +31,30 @@ fn depth_limited_dfs(graph: &Graph, root: Node, depth: usize) -> Option<Node> {
     None
 }
 
-fn iterative_deepening_dfs(graph: &Graph, root: Node) -> Option<Node> {
+pub fn iterative_deepening_dfs(graph: &mut Graph, root: Node) -> Option<Node> {
     for depth in 0.. {
         if let Some(node) = depth_limited_dfs(graph, root, depth) {
             return Some(node);
         }
     }
     None // unreachable
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{graph, dfs};
+
+    #[test]
+    fn check_dfs() {
+        let mut graph = graph::get_example_graph();
+        let goal = graph.goal();
+        assert_eq!(dfs::dfs(&mut graph, goal), Some(goal));
+    }
+
+    #[test]
+    fn check_iterative_deepening_dfs() {
+        let mut graph = graph::get_example_graph();
+        let goal = graph.goal();
+        assert_eq!(dfs::iterative_deepening_dfs(&mut graph, goal), Some(goal));
+    }
 }
