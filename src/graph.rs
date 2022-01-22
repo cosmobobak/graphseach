@@ -39,6 +39,21 @@ impl ExampleGraph {
             goal_id: 0
         }
     }
+
+    #[cfg(test)]
+    fn add(&mut self, node: ExampleNode) {
+        self.nodes.push(node);
+    }
+
+    #[cfg(test)]
+    fn add_edge(&mut self, edge: ExampleEdge) {
+        self.edges.push(edge);
+    }
+
+    #[cfg(test)]
+    fn set_goal(&mut self, node: ExampleNode) {
+        self.goal_id = node.id;
+    }
 }
 
 pub trait Graph {
@@ -46,11 +61,8 @@ pub trait Graph {
     type Edge: Copy + Eq;
 
     fn root() -> Self::Node;
-    fn add(&mut self, node: Self::Node);
-    fn add_edge(&mut self, edge: Self::Edge);
     fn children(&self, node: Self::Node) -> Vec<Self::Node>;
     fn is_goal(&self, node: Self::Node) -> bool;
-    fn set_goal(&mut self, node: Self::Node);
 }
 
 impl Graph for ExampleGraph {
@@ -59,14 +71,6 @@ impl Graph for ExampleGraph {
 
     fn root() -> Self::Node {
         ExampleNode::new(8)
-    }
-
-    fn add(&mut self, node: Self::Node) {
-        self.nodes.push(node);
-    }
-
-    fn add_edge(&mut self, edge: Self::Edge) {
-        self.edges.push(edge);
     }
 
     fn children(&self, node: Self::Node) -> Vec<Self::Node> {
@@ -79,10 +83,6 @@ impl Graph for ExampleGraph {
 
     fn is_goal(&self, node: Self::Node) -> bool {
         node.id == self.goal_id
-    }
-
-    fn set_goal(&mut self, node: Self::Node) {
-        self.goal_id = node.id;
     }
 }
 
