@@ -31,7 +31,7 @@ impl<G: Graph> Default for BFS<G> {
 }
 
 impl<G: Graph> GraphSearcher<G> for BFS<G> {
-    fn search_tracked(&mut self, graph: &mut G, root: G::Node) -> Option<G::Node> {
+    fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node> {
         let mut queue = VecDeque::new();
         self.mark_visited(root);
         queue.push_back(root);
@@ -50,7 +50,7 @@ impl<G: Graph> GraphSearcher<G> for BFS<G> {
         None
     }
 
-    fn search(graph: &mut G, root: G::Node) -> Option<G::Node> {
+    fn search(graph: &G, root: G::Node) -> Option<G::Node> {
         let mut queue = VecDeque::new();
         let mut visited = HashSet::new();
         visited.insert(root);

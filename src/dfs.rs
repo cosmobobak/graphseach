@@ -25,7 +25,7 @@ impl<G: Graph> Default for DFS<G> {
 }
 
 impl<G: Graph> GraphSearcher<G> for DFS<G> {
-    fn search_tracked(&mut self, graph: &mut G, root: G::Node) -> Option<G::Node> {
+    fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node> {
         self.mark_visited(root);
         if graph.is_goal(root) {
             return Some(root);
@@ -38,7 +38,7 @@ impl<G: Graph> GraphSearcher<G> for DFS<G> {
         None
     }
 
-    fn search(graph: &mut G, root: G::Node) -> Option<G::Node> {
+    fn search(graph: &G, root: G::Node) -> Option<G::Node> {
         if graph.is_goal(root) {
             return Some(root);
         }
@@ -72,7 +72,7 @@ impl<G: Graph> IterDeepening<G> {
         }
     }
 
-    fn dl_search_tracked(&mut self, graph: &mut G, root: G::Node, depth: usize) -> Option<G::Node> {
+    fn dl_search_tracked(&mut self, graph: &G, root: G::Node, depth: usize) -> Option<G::Node> {
         self.mark_visited(root);
         if depth == 0 {
             return None;
@@ -88,7 +88,7 @@ impl<G: Graph> IterDeepening<G> {
         None
     }
 
-    fn dl_search(graph: &mut G, root: G::Node, depth: usize) -> Option<G::Node> {
+    fn dl_search(graph: &G, root: G::Node, depth: usize) -> Option<G::Node> {
         if depth == 0 {
             return None;
         }
@@ -116,7 +116,7 @@ impl<G: Graph> Default for IterDeepening<G> {
 }
 
 impl<G: Graph> GraphSearcher<G> for IterDeepening<G> {
-    fn search_tracked(&mut self, graph: &mut G, root: G::Node) -> Option<G::Node> {
+    fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node> {
         for depth in 0.. {
             if let Some(node) = self.dl_search_tracked(graph, root, depth) {
                 return Some(node);
@@ -125,7 +125,7 @@ impl<G: Graph> GraphSearcher<G> for IterDeepening<G> {
         None // unreachable
     }
 
-    fn search(graph: &mut G, root: G::Node) -> Option<G::Node> {
+    fn search(graph: &G, root: G::Node) -> Option<G::Node> {
         for depth in 0.. {
             if let Some(node) = Self::dl_search(graph, root, depth) {
                 return Some(node);
