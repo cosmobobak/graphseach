@@ -3,14 +3,20 @@ use std::collections::{VecDeque, HashSet};
 use crate::{graph::Graph, graphsearcher::GraphSearcher};
 
 pub struct BFS<G: Graph> {
-    visited: HashSet<G::Node>
+    visited: HashSet<G::Node>,
+    max_frontier: usize
 }
 
 impl<G: Graph> BFS<G> {
     pub fn new() -> Self {
         Self {
-            visited: HashSet::new()
+            visited: HashSet::new(),
+            max_frontier: 1
         }
+    }
+
+    pub fn max_frontier(&self) -> usize {
+        self.max_frontier
     }
 
     fn mark_visited(&mut self, node: G::Node) {
@@ -39,6 +45,7 @@ impl<G: Graph> GraphSearcher<G> for BFS<G> {
                     queue.push_back(neighbor);
                 }
             }
+            self.max_frontier = std::cmp::max(self.max_frontier, queue.len());
         }
         None
     }
