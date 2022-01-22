@@ -7,6 +7,7 @@ pub struct DFS<G: Graph> {
 }
 
 impl<G: Graph> DFS<G> {
+    #[must_use] 
     pub fn new() -> Self {
         Self {
             visited: HashSet::new()
@@ -65,6 +66,7 @@ pub struct IterDeepening<G: Graph> {
 }
 
 impl<G: Graph> IterDeepening<G> {
+    #[must_use] 
     pub fn new() -> Self {
         Self {
             visited: HashSet::new(),
@@ -149,16 +151,16 @@ mod tests {
 
     #[test]
     fn check_dfs() {
-        let mut graph = graph::get_example_graph();
-        let found = DFS::search(&mut graph, ExampleGraph::root());
+        let graph = graph::get_example_graph();
+        let found = DFS::search(&graph, ExampleGraph::root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
     }
 
     #[test]
     fn check_iterative_deepening_dfs() {
-        let mut graph = graph::get_example_graph();
-        let found = IterDeepening::search(&mut graph, ExampleGraph::root());
+        let graph = graph::get_example_graph();
+        let found = IterDeepening::search(&graph, ExampleGraph::root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
     }

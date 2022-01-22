@@ -6,7 +6,7 @@ pub(crate) struct ExampleNode {
 }
 
 impl ExampleNode {
-    pub fn new(id: usize) -> Self {
+    pub const fn new(id: usize) -> Self {
         Self { id }
     }
 }
@@ -25,7 +25,7 @@ pub(crate) struct ExampleEdge {
 
 impl ExampleEdge {
     #[cfg(test)]
-    pub fn new(from_id: usize, to_id: usize) -> Self {
+    pub const fn new(from_id: usize, to_id: usize) -> Self {
         Self { from_id, to_id }
     }
 }
@@ -38,7 +38,7 @@ pub(crate) struct ExampleGraph {
 
 impl ExampleGraph {
     #[cfg(test)]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             nodes: Vec::new(),
             edges: Vec::new(),

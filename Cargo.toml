@@ -2,6 +2,12 @@
 name = "graphsearch"
 version = "0.1.0"
 edition = "2021"
+description = "Cosmo's impl's of graph search"
+license = "MIT"
+repository = "https://github.com/cosmobobak/graphsearch"
+keywords = ["graph", "search"]
+categories = ["algorithms"]
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

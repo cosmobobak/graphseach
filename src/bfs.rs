@@ -8,6 +8,7 @@ pub struct BFS<G: Graph> {
 }
 
 impl<G: Graph> BFS<G> {
+    #[must_use] 
     pub fn new() -> Self {
         Self {
             visited: HashSet::new(),
@@ -15,6 +16,7 @@ impl<G: Graph> BFS<G> {
         }
     }
 
+    #[must_use] 
     pub fn max_frontier(&self) -> usize {
         self.max_frontier
     }
@@ -85,8 +87,8 @@ mod tests {
 
     #[test]
     fn check_bfs() {
-        let mut graph = graph::get_example_graph();
-        let found = BFS::search(&mut graph, ExampleGraph::root());
+        let graph = graph::get_example_graph();
+        let found = BFS::search(&graph, ExampleGraph::root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
     }
