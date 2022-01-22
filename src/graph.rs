@@ -1,4 +1,4 @@
-use std::hash::Hash;
+use std::{hash::Hash, fmt::Display};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub(crate) struct ExampleNode {
@@ -8,6 +8,12 @@ pub(crate) struct ExampleNode {
 impl ExampleNode {
     pub fn new(id: usize) -> Self {
         Self { id }
+    }
+}
+
+impl Display for ExampleNode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Node({})", self.id)
     }
 }
 
@@ -57,7 +63,7 @@ impl ExampleGraph {
 }
 
 pub trait Graph {
-    type Node: Copy + Eq + Hash;
+    type Node: Copy + Eq + Hash + Display;
     type Edge: Copy + Eq;
 
     fn root() -> Self::Node;
