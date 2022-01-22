@@ -3,7 +3,7 @@ pub mod bfs;
 pub mod dfs;
 pub mod graphsearcher;
 
-pub fn gamut<G: graph::Graph>(game: &mut G) {
+pub fn gamut<G: graph::Graph>(game: &G) {
     use crate::graphsearcher::GraphSearcher;
     let mut bfs = bfs::BFS::new();
     let mut dfs = dfs::DFS::new();
