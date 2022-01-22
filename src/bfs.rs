@@ -1,18 +1,18 @@
 use std::collections::VecDeque;
 
-use crate::graph::{Graph, Node};
+use crate::graph::Graph;
 
-pub fn bfs(graph: &mut Graph, root: Node) -> Option<Node> {
+pub fn bfs<G: Graph>(graph: &mut G, root: G::Node) -> Option<G::Node> {
     let mut queue = VecDeque::new();
-    graph.visit(root);
+    graph.mark_visited(root);
     queue.push_back(root);
     while let Some(node) = queue.pop_front() {
         if graph.is_goal(node) {
             return Some(node);
         }
-        for neighbor in graph.neighbors(node) {
-            if !graph.visited(neighbor) {
-                graph.visit(neighbor);
+        for neighbor in graph.children(node) {
+            if !graph.is_visited(neighbor) {
+                graph.mark_visited(neighbor);
                 queue.push_back(neighbor);
             }
         }
@@ -22,7 +22,7 @@ pub fn bfs(graph: &mut Graph, root: Node) -> Option<Node> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph, bfs};
+    use crate::{graph::{self, Graph}, bfs};
 
     #[test]
     fn check_bfs() {

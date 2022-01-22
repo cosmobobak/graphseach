@@ -1,13 +1,11 @@
-use crate::graph::{Graph, Node};
+use crate::graph::Graph;
 
-
-
-pub fn dfs(graph: &mut Graph, root: Node) -> Option<Node> {
-    graph.visit(root);
+pub fn dfs<G: Graph>(graph: &mut G, root: G::Node) -> Option<G::Node> {
+    graph.mark_visited(root);
     if graph.is_goal(root) {
         return Some(root);
     }
-    for neighbor in graph.neighbors(root) {
+    for neighbor in graph.children(root) {
         if let Some(node) = dfs(graph, neighbor) {
             return Some(node);
         }
@@ -15,15 +13,15 @@ pub fn dfs(graph: &mut Graph, root: Node) -> Option<Node> {
     None
 }
 
-fn depth_limited_dfs(graph: &mut Graph, root: Node, depth: usize) -> Option<Node> {
-    graph.visit(root);
+fn depth_limited_dfs<G: Graph>(graph: &mut G, root: G::Node, depth: usize) -> Option<G::Node> {
+    graph.mark_visited(root);
     if depth == 0 {
         return None;
     }
     if graph.is_goal(root) {
         return Some(root);
     }
-    for neighbor in graph.neighbors(root) {
+    for neighbor in graph.children(root) {
         if let Some(node) = depth_limited_dfs(graph, neighbor, depth - 1) {
             return Some(node);
         }
@@ -31,7 +29,7 @@ fn depth_limited_dfs(graph: &mut Graph, root: Node, depth: usize) -> Option<Node
     None
 }
 
-pub fn iterative_deepening_dfs(graph: &mut Graph, root: Node) -> Option<Node> {
+pub fn iterative_deepening_dfs<G: Graph>(graph: &mut G, root: G::Node) -> Option<G::Node> {
     for depth in 0.. {
         if let Some(node) = depth_limited_dfs(graph, root, depth) {
             return Some(node);
@@ -42,7 +40,7 @@ pub fn iterative_deepening_dfs(graph: &mut Graph, root: Node) -> Option<Node> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph, dfs};
+    use crate::{graph::{self, Graph}, dfs};
 
     #[test]
     fn check_dfs() {
