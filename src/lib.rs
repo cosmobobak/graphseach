@@ -10,18 +10,21 @@ pub fn gamut<G: graph::Graph>(game: &mut G) {
     let mut it_deep = dfs::IterDeepening::new();
     println!(
         "bfs finds the solution {} \n bfs expands {} nodes. \n the largest frontier maintained was {} nodes.", 
-        bfs.search_tracked(game, G::root()).unwrap(),
+        bfs.search_tracked(game, G::root())
+            .expect("bfs failed to find a solution"),
         bfs.nodes_visited(),
         bfs.max_frontier()
     );
     println!(
         "dfs finds the solution {} \n dfs expands {} nodes.", 
-        dfs.search_tracked(game, G::root()).unwrap(),
+        dfs.search_tracked(game, G::root())
+            .expect("dfs failed to find a solution"),
         dfs.nodes_visited()
     );
     println!(
         "iterative deepening dfs finds the solution {} \n iterative deepening dfs expands {} nodes.", 
-        it_deep.search_tracked(game, G::root()).unwrap(),
+        it_deep.search_tracked(game, G::root())
+            .expect("iterative deepening dfs failed to find a solution"),
         it_deep.nodes_visited()
     );
 }
