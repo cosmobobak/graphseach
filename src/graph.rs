@@ -45,10 +45,10 @@ pub trait Graph {
     type Node: Copy + Eq + Hash;
     type Edge: Copy + Eq;
 
+    fn root() -> Self::Node;
     fn add(&mut self, node: Self::Node);
     fn add_edge(&mut self, edge: Self::Edge);
     fn children(&self, node: Self::Node) -> Vec<Self::Node>;
-    fn goal(&self) -> Self::Node;
     fn is_goal(&self, node: Self::Node) -> bool;
     fn set_goal(&mut self, node: Self::Node);
 }
@@ -56,6 +56,10 @@ pub trait Graph {
 impl Graph for ExampleGraph {
     type Node = ExampleNode;
     type Edge = ExampleEdge;
+
+    fn root() -> Self::Node {
+        ExampleNode::new(8)
+    }
 
     fn add(&mut self, node: Self::Node) {
         self.nodes.push(node);
@@ -71,10 +75,6 @@ impl Graph for ExampleGraph {
             .filter(move |n| self.edges.iter().any(|e| e.from_id == node.id && e.to_id == n.id))
             .copied()
             .collect()
-    }
-
-    fn goal(&self) -> Self::Node {
-        Self::Node::new(self.goal_id)
     }
 
     fn is_goal(&self, node: Self::Node) -> bool {

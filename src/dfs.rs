@@ -145,19 +145,21 @@ impl<G: Graph> GraphSearcher<G> for IterDeepening<G> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph::{self, Graph}, dfs::{DFS, IterDeepening}, graphsearcher::GraphSearcher};
+    use crate::{graph::{self, Graph, ExampleGraph}, dfs::{DFS, IterDeepening}, graphsearcher::GraphSearcher};
 
     #[test]
     fn check_dfs() {
         let mut graph = graph::get_example_graph();
-        let goal = graph.goal();
-        assert_eq!(DFS::search(&mut graph, goal), Some(goal));
+        let found = DFS::search(&mut graph, ExampleGraph::root());
+        assert!(found.is_some());
+        assert!(graph.is_goal(found.unwrap()));
     }
 
     #[test]
     fn check_iterative_deepening_dfs() {
         let mut graph = graph::get_example_graph();
-        let goal = graph.goal();
-        assert_eq!(IterDeepening::search(&mut graph, goal), Some(goal));
+        let found = IterDeepening::search(&mut graph, ExampleGraph::root());
+        assert!(found.is_some());
+        assert!(graph.is_goal(found.unwrap()));
     }
 }

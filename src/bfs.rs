@@ -73,14 +73,15 @@ impl<G: Graph> GraphSearcher<G> for BFS<G> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph::{self, Graph}, bfs::BFS};
+    use crate::{graph::{self, Graph, ExampleGraph}, bfs::BFS};
     use crate::graphsearcher::GraphSearcher;
 
     #[test]
     fn check_bfs() {
         let mut graph = graph::get_example_graph();
-        let goal = graph.goal();
-        assert_eq!(BFS::search(&mut graph, goal), Some(goal));
+        let found = BFS::search(&mut graph, ExampleGraph::root());
+        assert!(found.is_some());
+        assert!(graph.is_goal(found.unwrap()));
     }
 }
 
