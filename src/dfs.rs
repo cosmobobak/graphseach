@@ -1,58 +1,163 @@
-use crate::graph::Graph;
+use std::collections::HashSet;
 
-pub fn dfs<G: Graph>(graph: &mut G, root: G::Node) -> Option<G::Node> {
-    graph.mark_visited(root);
-    if graph.is_goal(root) {
-        return Some(root);
-    }
-    for neighbor in graph.children(root) {
-        if let Some(node) = dfs(graph, neighbor) {
-            return Some(node);
-        }
-    }
-    None
+use crate::{graph::Graph, graphsearcher::GraphSearcher};
+
+pub struct DFS<G: Graph> {
+    visited: HashSet<G::Node>
 }
 
-fn depth_limited_dfs<G: Graph>(graph: &mut G, root: G::Node, depth: usize) -> Option<G::Node> {
-    graph.mark_visited(root);
-    if depth == 0 {
-        return None;
-    }
-    if graph.is_goal(root) {
-        return Some(root);
-    }
-    for neighbor in graph.children(root) {
-        if let Some(node) = depth_limited_dfs(graph, neighbor, depth - 1) {
-            return Some(node);
+impl<G: Graph> DFS<G> {
+    pub fn new() -> Self {
+        Self {
+            visited: HashSet::new()
         }
     }
-    None
+
+    fn mark_visited(&mut self, node: G::Node) {
+        self.visited.insert(node);
+    }
 }
 
-pub fn iterative_deepening_dfs<G: Graph>(graph: &mut G, root: G::Node) -> Option<G::Node> {
-    for depth in 0.. {
-        if let Some(node) = depth_limited_dfs(graph, root, depth) {
-            return Some(node);
+impl<G: Graph> Default for DFS<G> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<G: Graph> GraphSearcher<G> for DFS<G> {
+    fn search_tracked(&mut self, graph: &mut G, root: G::Node) -> Option<G::Node> {
+        self.mark_visited(root);
+        if graph.is_goal(root) {
+            return Some(root);
+        }
+        for neighbor in graph.children(root) {
+            if let Some(node) = self.search_tracked(graph, neighbor) {
+                return Some(node);
+            }
+        }
+        None
+    }
+
+    fn search(graph: &mut G, root: G::Node) -> Option<G::Node> {
+        if graph.is_goal(root) {
+            return Some(root);
+        }
+        for neighbor in graph.children(root) {
+            if let Some(node) = Self::search(graph, neighbor) {
+                return Some(node);
+            }
+        }
+        None
+    }
+
+    fn nodes_visited(&self) -> usize {
+        self.visited.len()
+    }
+
+    fn is_visited(&self, node: G::Node) -> bool {
+        self.visited.contains(&node)
+    }
+}
+
+pub struct IterDeepening<G: Graph> {
+    visited: HashSet<G::Node>,
+    counter: usize,
+}
+
+impl<G: Graph> IterDeepening<G> {
+    pub fn new() -> Self {
+        Self {
+            visited: HashSet::new(),
+            counter: 0,
         }
     }
-    None // unreachable
+
+    fn dl_search_tracked(&mut self, graph: &mut G, root: G::Node, depth: usize) -> Option<G::Node> {
+        self.mark_visited(root);
+        if depth == 0 {
+            return None;
+        }
+        if graph.is_goal(root) {
+            return Some(root);
+        }
+        for neighbor in graph.children(root) {
+            if let Some(node) = self.dl_search_tracked(graph, neighbor, depth - 1) {
+                return Some(node);
+            }
+        }
+        None
+    }
+
+    fn dl_search(graph: &mut G, root: G::Node, depth: usize) -> Option<G::Node> {
+        if depth == 0 {
+            return None;
+        }
+        if graph.is_goal(root) {
+            return Some(root);
+        }
+        for neighbor in graph.children(root) {
+            if let Some(node) = Self::dl_search(graph, neighbor, depth - 1) {
+                return Some(node);
+            }
+        }
+        None
+    }
+
+    fn mark_visited(&mut self, node: G::Node) {
+        self.visited.insert(node);
+        self.counter += 1;
+    }
+}
+
+impl<G: Graph> Default for IterDeepening<G> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<G: Graph> GraphSearcher<G> for IterDeepening<G> {
+    fn search_tracked(&mut self, graph: &mut G, root: G::Node) -> Option<G::Node> {
+        for depth in 0.. {
+            if let Some(node) = self.dl_search_tracked(graph, root, depth) {
+                return Some(node);
+            }
+        }
+        None // unreachable
+    }
+
+    fn search(graph: &mut G, root: G::Node) -> Option<G::Node> {
+        for depth in 0.. {
+            if let Some(node) = Self::dl_search(graph, root, depth) {
+                return Some(node);
+            }
+        }
+        None // unreachable
+    }
+
+    fn nodes_visited(&self) -> usize {
+        self.counter
+    }
+
+    fn is_visited(&self, node: G::Node) -> bool {
+        self.visited.contains(&node)
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph::{self, Graph}, dfs};
+    use crate::{graph::{self, Graph}, dfs::{DFS, IterDeepening}, graphsearcher::GraphSearcher};
 
     #[test]
     fn check_dfs() {
         let mut graph = graph::get_example_graph();
         let goal = graph.goal();
-        assert_eq!(dfs::dfs(&mut graph, goal), Some(goal));
+        assert_eq!(DFS::search(&mut graph, goal), Some(goal));
     }
 
     #[test]
     fn check_iterative_deepening_dfs() {
         let mut graph = graph::get_example_graph();
         let goal = graph.goal();
-        assert_eq!(dfs::iterative_deepening_dfs(&mut graph, goal), Some(goal));
+        assert_eq!(IterDeepening::search(&mut graph, goal), Some(goal));
     }
 }

@@ -1,34 +1,86 @@
-use std::collections::VecDeque;
+use std::collections::{VecDeque, HashSet};
 
-use crate::graph::Graph;
+use crate::{graph::Graph, graphsearcher::GraphSearcher};
 
-pub fn bfs<G: Graph>(graph: &mut G, root: G::Node) -> Option<G::Node> {
-    let mut queue = VecDeque::new();
-    graph.mark_visited(root);
-    queue.push_back(root);
-    while let Some(node) = queue.pop_front() {
-        if graph.is_goal(node) {
-            return Some(node);
-        }
-        for neighbor in graph.children(node) {
-            if !graph.is_visited(neighbor) {
-                graph.mark_visited(neighbor);
-                queue.push_back(neighbor);
-            }
+pub struct BFS<G: Graph> {
+    visited: HashSet<G::Node>
+}
+
+impl<G: Graph> BFS<G> {
+    pub fn new() -> Self {
+        Self {
+            visited: HashSet::new()
         }
     }
-    None
+
+    fn mark_visited(&mut self, node: G::Node) {
+        self.visited.insert(node);
+    }
+}
+
+impl<G: Graph> Default for BFS<G> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<G: Graph> GraphSearcher<G> for BFS<G> {
+    fn search_tracked(&mut self, graph: &mut G, root: G::Node) -> Option<G::Node> {
+        let mut queue = VecDeque::new();
+        self.mark_visited(root);
+        queue.push_back(root);
+        while let Some(node) = queue.pop_front() {
+            if graph.is_goal(node) {
+                return Some(node);
+            }
+            for neighbor in graph.children(node) {
+                if !self.is_visited(neighbor) {
+                    self.mark_visited(neighbor);
+                    queue.push_back(neighbor);
+                }
+            }
+        }
+        None
+    }
+
+    fn search(graph: &mut G, root: G::Node) -> Option<G::Node> {
+        let mut queue = VecDeque::new();
+        let mut visited = HashSet::new();
+        visited.insert(root);
+        queue.push_back(root);
+        while let Some(node) = queue.pop_front() {
+            if graph.is_goal(node) {
+                return Some(node);
+            }
+            for neighbor in graph.children(node) {
+                if !visited.contains(&neighbor) {
+                    visited.insert(neighbor);
+                    queue.push_back(neighbor);
+                }
+            }
+        }
+        None
+    }
+
+    fn nodes_visited(&self) -> usize {
+        self.visited.len()
+    }
+
+    fn is_visited(&self, node: G::Node) -> bool {
+        self.visited.contains(&node)
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph::{self, Graph}, bfs};
+    use crate::{graph::{self, Graph}, bfs::BFS};
+    use crate::graphsearcher::GraphSearcher;
 
     #[test]
     fn check_bfs() {
         let mut graph = graph::get_example_graph();
         let goal = graph.goal();
-        assert_eq!(bfs::bfs(&mut graph, goal), Some(goal));
+        assert_eq!(BFS::search(&mut graph, goal), Some(goal));
     }
 }
 

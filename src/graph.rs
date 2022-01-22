@@ -1,5 +1,4 @@
-use std::collections::HashSet;
-
+use std::hash::Hash;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub(crate) struct ExampleNode {
@@ -19,6 +18,7 @@ pub(crate) struct ExampleEdge {
 }
 
 impl ExampleEdge {
+    #[cfg(test)]
     pub fn new(from_id: usize, to_id: usize) -> Self {
         Self { from_id, to_id }
     }
@@ -27,35 +27,30 @@ impl ExampleEdge {
 pub(crate) struct ExampleGraph {
     nodes: Vec<ExampleNode>,
     edges: Vec<ExampleEdge>,
-    goal_id: usize,
-    visited: HashSet<usize>
+    goal_id: usize
 }
 
 impl ExampleGraph {
+    #[cfg(test)]
     pub fn new() -> Self {
         Self {
             nodes: Vec::new(),
             edges: Vec::new(),
-            goal_id: 0,
-            visited: HashSet::new()
+            goal_id: 0
         }
     }
 }
 
 pub trait Graph {
-    type Node: Copy;
-    type Edge: Copy;
+    type Node: Copy + Eq + Hash;
+    type Edge: Copy + Eq;
 
     fn add(&mut self, node: Self::Node);
     fn add_edge(&mut self, edge: Self::Edge);
     fn children(&self, node: Self::Node) -> Vec<Self::Node>;
-    fn is_goal(&self, node: Self::Node) -> bool;
-    fn is_visited(&self, node: Self::Node) -> bool;
-    fn mark_visited(&mut self, node: Self::Node);
-    fn unmark_visited(&mut self, node: Self::Node);
-    fn count_visited(&self) -> usize;
-    fn set_goal(&mut self, node: Self::Node);
     fn goal(&self) -> Self::Node;
+    fn is_goal(&self, node: Self::Node) -> bool;
+    fn set_goal(&mut self, node: Self::Node);
 }
 
 impl Graph for ExampleGraph {
@@ -78,12 +73,8 @@ impl Graph for ExampleGraph {
             .collect()
     }
 
-    fn mark_visited(&mut self, node: Self::Node) {
-        self.visited.insert(node.id);
-    }
-
-    fn is_visited(&self, node: Self::Node) -> bool {
-        self.visited.contains(&node.id)
+    fn goal(&self) -> Self::Node {
+        Self::Node::new(self.goal_id)
     }
 
     fn is_goal(&self, node: Self::Node) -> bool {
@@ -93,20 +84,9 @@ impl Graph for ExampleGraph {
     fn set_goal(&mut self, node: Self::Node) {
         self.goal_id = node.id;
     }
-
-    fn goal(&self) -> Self::Node {
-        Self::Node::new(self.goal_id)
-    }
-
-    fn unmark_visited(&mut self, node: Self::Node) {
-        self.visited.remove(&node.id);
-    }
-
-    fn count_visited(&self) -> usize {
-        self.visited.len()
-    }
 }
 
+#[cfg(test)]
 pub(crate) fn get_example_graph() -> ExampleGraph {
     // https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Binary_search_tree.svg/1200px-Binary_search_tree.svg.png
     let mut graph = ExampleGraph::new();
