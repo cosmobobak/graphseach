@@ -21,8 +21,8 @@ pub fn gamut<G: graph::Graph>(game: &G) {
         breadthfirst.search_tracked(game, G::root())
             .expect("bfs failed to find a solution"),
         breadthfirst.nodes_visited(),
-        breadthfirst.max_frontier(),
-        breadthfirst.path()
+        breadthfirst.path(),
+        breadthfirst.max_frontier()
     );
     println!(
         "dfs finds the solution {} \n dfs expands {} nodes. \n bfs finds the path {:?}.", 
