@@ -9,6 +9,7 @@ pub mod graph;
 pub mod bfs;
 pub mod dfs;
 pub mod graphsearcher;
+pub mod perft;
 mod examplegraph;
 
 pub fn gamut<G: graph::Graph>(game: &G) {
