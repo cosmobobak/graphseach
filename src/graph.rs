@@ -1,6 +1,6 @@
 #![warn(clippy::module_name_repetitions)]
 
-use std::{hash::Hash, fmt::Display};
+use std::{hash::Hash, fmt::Display, fmt::Debug};
 
 pub trait Graph {
     type Node: Copy + Eq + Hash + Display + Debug;
