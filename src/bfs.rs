@@ -30,7 +30,7 @@ impl<G: Graph> BFS<G> {
     }
 
     #[must_use] 
-    fn path(&self) -> &[G::Node] {
+    pub fn path(&self) -> &[G::Node] {
         &self.path
     }
 }

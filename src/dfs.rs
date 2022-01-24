@@ -21,7 +21,7 @@ impl<G: Graph> DFS<G> {
     }
 
     #[must_use] 
-    fn path(&self) -> &[G::Node] {
+    pub fn path(&self) -> &[G::Node] {
         &self.path
     }
 }
@@ -124,7 +124,7 @@ impl<G: Graph> IterDeepening<G> {
     }
 
     #[must_use] 
-    fn path(&self) -> &[G::Node] {
+    pub fn path(&self) -> &[G::Node] {
         &self.path
     }
 }
