@@ -1,9 +1,11 @@
-use std::collections::{VecDeque, HashSet};
+use std::collections::{VecDeque, HashSet, HashMap};
 
 use crate::{graph::Graph, graphsearcher::GraphSearcher};
 
 pub struct BFS<G: Graph> {
     visited: HashSet<G::Node>,
+    parents: HashMap<G::Node, G::Node>,
+    path: Vec<G::Node>,
     max_frontier: usize
 }
 
@@ -12,6 +14,8 @@ impl<G: Graph> BFS<G> {
     pub fn new() -> Self {
         Self {
             visited: HashSet::new(),
+            parents: HashMap::new(),
+            path: Vec::new(),
             max_frontier: 1
         }
     }
@@ -23,6 +27,11 @@ impl<G: Graph> BFS<G> {
 
     fn mark_visited(&mut self, node: G::Node) {
         self.visited.insert(node);
+    }
+
+    #[must_use] 
+    fn path(&self) -> &[G::Node] {
+        &self.path
     }
 }
 
@@ -39,9 +48,17 @@ impl<G: Graph> GraphSearcher<G> for BFS<G> {
         queue.push_back(root);
         while let Some(node) = queue.pop_front() {
             if graph.is_goal(node) {
+                let mut n = node;
+                self.path.push(n);
+                while let Some(&parent) = self.parents.get(&n) {
+                    self.path.push(parent);
+                    n = parent;
+                }
+                self.path.reverse();
                 return Some(node);
             }
             for neighbor in graph.children(node) {
+                self.parents.insert(neighbor, node);
                 if !self.is_visited(neighbor) {
                     self.mark_visited(neighbor);
                     queue.push_back(neighbor);
@@ -84,13 +101,16 @@ impl<G: Graph> GraphSearcher<G> for BFS<G> {
 mod tests {
     use crate::{graph::Graph, bfs::BFS, examplegraph::{self, ExampleGraph}};
     use crate::graphsearcher::GraphSearcher;
+    use crate::examplegraph::ExampleNode;
 
     #[test]
     fn check_bfs() {
         let graph = examplegraph::get_example_graph();
-        let found = BFS::search(&graph, ExampleGraph::root());
+        let mut searcher = BFS::new();
+        let found = searcher.search_tracked(&graph, ExampleGraph::root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
+        assert_eq!(searcher.path(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
     }
 }
 
