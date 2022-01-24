@@ -3,7 +3,7 @@ use crate::graph::Graph;
 
 pub fn perft<G: Graph>(graph: &G, node: G::Node, depth: usize) -> usize {
     let children = graph.children(node);
-    let no_children = children.len() == 0;
+    let no_children = children.is_empty();
     if depth == 0 || no_children {
         return 1;
     }
