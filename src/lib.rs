@@ -17,7 +17,7 @@ pub fn gamut<G: graph::Graph>(game: &G) {
     let mut depthfirst = dfs::DFS::new();
     let mut it_deep = dfs::IterDeepening::new();
     println!(
-        "bfs finds the solution {} \n bfs expands {} nodes. \n bfs finds the path \n{}\n \n the largest frontier maintained was {} nodes.", 
+        "bfs finds the solution {} \n bfs expands {} nodes. \n bfs finds the path \n{}\n the largest frontier maintained was {} nodes.\n", 
         breadthfirst.search_tracked(game, G::root())
             .expect("bfs failed to find a solution"),
         breadthfirst.nodes_visited(),
@@ -25,14 +25,14 @@ pub fn gamut<G: graph::Graph>(game: &G) {
         breadthfirst.max_frontier()
     );
     println!(
-        "dfs finds the solution {} \n dfs expands {} nodes. \n bfs finds the path \n{}", 
+        "dfs finds the solution {} \n dfs expands {} nodes. \n bfs finds the path \n{}\n", 
         depthfirst.search_tracked(game, G::root())
             .expect("dfs failed to find a solution"),
         depthfirst.nodes_visited(),
         depthfirst.path().iter().map(|s| format!("{}", s)).collect::<Vec<_>>().join("\n")
     );
     println!(
-        "iterative deepening dfs finds the solution {} \n iterative deepening dfs expands {} nodes. \n bfs finds the path \n{}", 
+        "iterative deepening dfs finds the solution {} \n iterative deepening dfs expands {} nodes. \n bfs finds the path \n{}\n", 
         it_deep.search_tracked(game, G::root())
             .expect("iterative deepening dfs failed to find a solution"),
         it_deep.nodes_visited(),
