@@ -3,7 +3,7 @@
 use std::{hash::Hash, fmt::Display};
 
 pub trait Graph {
-    type Node: Copy + Eq + Hash + Display;
+    type Node: Copy + Eq + Hash + Display + Debug;
     type Edge: Copy + Eq;
 
     fn root() -> Self::Node;
