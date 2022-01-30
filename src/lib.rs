@@ -5,12 +5,14 @@
     clippy::cargo,
 )]
 
+mod heapelement;
 pub mod graph;
 pub mod bfs;
 pub mod dfs;
 pub mod graphsearcher;
 pub mod perft;
 mod examplegraph;
+pub mod bestfirst;
 
 pub fn gamut<G: graph::Graph>(game: &G) {
     use crate::graphsearcher::GraphSearcher;
@@ -20,23 +22,35 @@ pub fn gamut<G: graph::Graph>(game: &G) {
     println!(
         "bfs finds the solution {} \n bfs expands {} nodes. \n bfs finds the path \n{}\n the largest frontier maintained was {} nodes.\n", 
         breadthfirst.search_tracked(game, G::root())
-            .expect("bfs failed to find a solution"),
+            .map_or_else(|| "[NO SOLUTION]".to_string(), |s| format!("{}", s)),
         breadthfirst.nodes_visited(),
-        breadthfirst.path().iter().map(|s| format!("{}", s)).collect::<Vec<_>>().join("\n"),
+        breadthfirst.path().map_or_else(|| "no path".to_string(), |p| p.iter().map(|s| format!("{}", s)).collect::<Vec<_>>().join("\n")),
         breadthfirst.max_frontier()
     );
     println!(
         "dfs finds the solution {} \n dfs expands {} nodes. \n dfs finds the path \n{}\n", 
         depthfirst.search_tracked(game, G::root())
-            .expect("dfs failed to find a solution"),
+            .map_or_else(|| "[NO SOLUTION]".to_string(), |s| format!("{}", s)),
         depthfirst.nodes_visited(),
-        depthfirst.path().iter().map(|s| format!("{}", s)).collect::<Vec<_>>().join("\n")
+        depthfirst.path().map_or_else(|| "no path".to_string(), |p| p.iter().map(|s| format!("{}", s)).collect::<Vec<_>>().join("\n")),
     );
     println!(
         "iterative deepening dfs finds the solution {} \n iterative deepening dfs expands {} nodes. \n iterative deepening dfs finds the path \n{}\n", 
         it_deep.search_tracked(game, G::root())
-            .expect("iterative deepening dfs failed to find a solution"),
+            .map_or_else(|| "[NO SOLUTION]".to_string(), |s| format!("{}", s)),
         it_deep.nodes_visited(),
-        it_deep.path().iter().map(|s| format!("{}", s)).collect::<Vec<_>>().join("\n")
+        it_deep.path().map_or_else(|| "no path".to_string(), |p| p.iter().map(|s| format!("{}", s)).collect::<Vec<_>>().join("\n")),
+    );
+}
+
+pub fn weighted_gamut<G: graph::WeightedGraph>(game: &G) {
+    use crate::graphsearcher::WeightedGraphSearcher;
+    let mut bestfirst = bestfirst::BestFirstSearch::new();
+    println!(
+        "best first search finds the solution {} \n best first search expands {} nodes. \n best first search finds the path \n{}\n", 
+        bestfirst.search_tracked(game, G::root())
+            .map_or_else(|| "[NO SOLUTION]".to_string(), |s| format!("{}", s)),
+        bestfirst.nodes_visited(),
+        bestfirst.path().map_or_else(|| "no path".to_string(), |p| p.iter().map(|s| format!("{}", s)).collect::<Vec<_>>().join("\n")),
     );
 }

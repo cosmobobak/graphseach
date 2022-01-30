@@ -14,7 +14,5 @@ pub trait Graph {
 
 #[allow(clippy::module_name_repetitions)]
 pub trait WeightedGraph: Graph {
-    type Weight: Copy + Eq + Hash + Display + Debug;
-
-    fn edge_weight(&self, edge: Self::Edge) -> Self::Weight;
+    fn edge_weight(&self, from: Self::Node, to: Self::Node) -> i64;
 }

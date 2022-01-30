@@ -19,11 +19,6 @@ impl<G: Graph> DFS<G> {
     fn mark_visited(&mut self, node: G::Node) {
         self.visited.insert(node);
     }
-
-    #[must_use] 
-    pub fn path(&self) -> &[G::Node] {
-        &self.path
-    }
 }
 
 impl<G: Graph> Default for DFS<G> {
@@ -66,6 +61,10 @@ impl<G: Graph> GraphSearcher<G> for DFS<G> {
 
     fn is_visited(&self, node: G::Node) -> bool {
         self.visited.contains(&node)
+    }
+
+    fn path(&self) -> Option<Vec<G::Node>> {
+        Some(self.path.clone())
     }
 }
 
@@ -122,11 +121,6 @@ impl<G: Graph> IterDeepening<G> {
         self.visited.insert(node);
         self.counter += 1;
     }
-
-    #[must_use] 
-    pub fn path(&self) -> &[G::Node] {
-        &self.path
-    }
 }
 
 impl<G: Graph> Default for IterDeepening<G> {
@@ -162,6 +156,10 @@ impl<G: Graph> GraphSearcher<G> for IterDeepening<G> {
     fn is_visited(&self, node: G::Node) -> bool {
         self.visited.contains(&node)
     }
+
+    fn path(&self) -> Option<Vec<G::Node>> {
+        Some(self.path.clone())
+    }
 }
 
 #[cfg(test)]
@@ -176,7 +174,7 @@ mod tests {
         let found = searcher.search_tracked(&graph, ExampleGraph::root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
-        assert_eq!(searcher.path(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
+        assert_eq!(searcher.path().unwrap(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
     }
 
     #[test]
@@ -186,6 +184,6 @@ mod tests {
         let found = searcher.search_tracked(&graph, ExampleGraph::root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
-        assert_eq!(searcher.path(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
+        assert_eq!(searcher.path().unwrap(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
     }
 }

@@ -5,7 +5,7 @@ use crate::{graph::Graph, graphsearcher::GraphSearcher};
 pub struct BFS<G: Graph> {
     visited: HashSet<G::Node>,
     parents: HashMap<G::Node, G::Node>,
-    path: Vec<G::Node>,
+    solution: Option<G::Node>,
     max_frontier: usize
 }
 
@@ -15,7 +15,7 @@ impl<G: Graph> BFS<G> {
         Self {
             visited: HashSet::new(),
             parents: HashMap::new(),
-            path: Vec::new(),
+            solution: None,
             max_frontier: 1
         }
     }
@@ -27,11 +27,6 @@ impl<G: Graph> BFS<G> {
 
     fn mark_visited(&mut self, node: G::Node) {
         self.visited.insert(node);
-    }
-
-    #[must_use] 
-    pub fn path(&self) -> &[G::Node] {
-        &self.path
     }
 }
 
@@ -48,13 +43,6 @@ impl<G: Graph> GraphSearcher<G> for BFS<G> {
         queue.push_back(root);
         while let Some(node) = queue.pop_front() {
             if graph.is_goal(node) {
-                let mut n = node;
-                self.path.push(n);
-                while let Some(&parent) = self.parents.get(&n) {
-                    self.path.push(parent);
-                    n = parent;
-                }
-                self.path.reverse();
                 return Some(node);
             }
             for neighbor in graph.children(node) {
@@ -95,6 +83,19 @@ impl<G: Graph> GraphSearcher<G> for BFS<G> {
     fn is_visited(&self, node: G::Node) -> bool {
         self.visited.contains(&node)
     }
+
+    fn path(&self) -> Option<Vec<G::Node>> {
+        let solution = self.solution?;
+        let mut path = Vec::new();
+        let mut n = solution;
+        path.push(n);
+        while let Some(&parent) = self.parents.get(&n) {
+            path.push(parent);
+            n = parent;
+        }
+        path.reverse();
+        Some(path)
+    }
 }
 
 #[cfg(test)]
@@ -110,7 +111,7 @@ mod tests {
         let found = searcher.search_tracked(&graph, ExampleGraph::root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
-        assert_eq!(searcher.path(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
+        assert_eq!(searcher.path().unwrap(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
     }
 }
 

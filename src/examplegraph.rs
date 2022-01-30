@@ -1,6 +1,6 @@
 use std::{hash::Hash, fmt::Display};
 
-use crate::graph::Graph;
+use crate::graph::{Graph, WeightedGraph};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub struct ExampleNode {
@@ -96,6 +96,12 @@ impl Graph for ExampleGraph {
 
     fn is_goal(&self, node: Self::Node) -> bool {
         node.id == self.goal_id
+    }
+}
+
+impl WeightedGraph for ExampleGraph {
+    fn edge_weight(&self, _from: Self::Node, _to: Self::Node) -> i64 {
+        1
     }
 }
 
