@@ -54,6 +54,7 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
                         return Some(child);
                     } 
                     
+                    self.visited.insert(child);
                     self.parents.insert(child, best_next_node);
                     frontier.push(Reverse(HeapElement::new(
                         child, 
@@ -61,7 +62,6 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
                 }
             }
             self.max_frontier = std::cmp::max(self.max_frontier, frontier.len());
-            self.visited.insert(best_next_node);
         }
         None
     }
@@ -110,5 +110,21 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
         }
         path.reverse();
         Some(path)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::examplegraph::{get_example_graph, ExampleGraph};
+    use crate::graph::Graph;
+    use crate::graphsearcher::ComplexGraphSearcher;
+
+    #[test]
+    fn test_best_first_search() {
+        let graph = get_example_graph();
+        let mut searcher = BestFirstSearch::new();
+        let solution = searcher.search_tracked(&graph, ExampleGraph::root());
+        assert!(graph.is_goal(solution.unwrap()));
     }
 }

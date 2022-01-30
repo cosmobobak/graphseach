@@ -43,6 +43,7 @@ impl<G: Graph> GraphSearcher<G> for BFS<G> {
         queue.push_back(root);
         while let Some(node) = queue.pop_front() {
             if graph.is_goal(node) {
+                self.solution = Some(node);
                 return Some(node);
             }
             for neighbor in graph.children(node) {
