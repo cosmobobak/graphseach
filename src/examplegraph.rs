@@ -32,6 +32,12 @@ impl ExampleEdge {
     }
 }
 
+impl Display for ExampleEdge {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Edge({} -> {})", self.from_id, self.to_id)
+    }
+}
+
 pub struct ExampleGraph {
     nodes: Vec<ExampleNode>,
     edges: Vec<ExampleEdge>,
@@ -76,6 +82,14 @@ impl Graph for ExampleGraph {
         self.nodes
             .iter()
             .filter(move |n| self.edges.iter().any(|e| e.from_id == node.id && e.to_id == n.id))
+            .copied()
+            .collect()
+    }
+
+    fn edges(&self, node: Self::Node) -> Vec<Self::Edge> {
+        self.edges
+            .iter()
+            .filter(move |e| e.from_id == node.id)
             .copied()
             .collect()
     }
