@@ -1,4 +1,3 @@
-use std::cmp::Reverse;
 use std::collections::{HashSet, HashMap, BinaryHeap};
 
 use crate::graph::HeuristicGraph;
@@ -40,25 +39,26 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
         self.visited.clear();
         self.parents.clear();
         self.max_frontier = 1;
+        let mut frontier = BinaryHeap::new();
 
         self.visited.insert(root);
-        let mut frontier = BinaryHeap::new();
-        frontier.push(Reverse(HeapElement::new(root, graph.heuristic(root))));
+        frontier.push(HeapElement::new(root, graph.heuristic(root)));
 
         while let Some(best_next_node) = frontier.pop() {
-            let best_next_node = *best_next_node.0.node();
+            let best_next_node = *best_next_node.node();
             for child in graph.children(best_next_node) {
                 if !self.is_visited(child) {
+                    self.parents.insert(child, best_next_node);
+                    
                     if graph.is_goal(child) {
                         self.solution = Some(child);
                         return Some(child);
                     } 
                     
                     self.visited.insert(child);
-                    self.parents.insert(child, best_next_node);
-                    frontier.push(Reverse(HeapElement::new(
+                    frontier.push(HeapElement::new(
                         child, 
-                        graph.heuristic(child))));
+                        graph.heuristic(child)));
                 }
             }
             self.max_frontier = std::cmp::max(self.max_frontier, frontier.len());
@@ -79,7 +79,7 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
                 if !visited.contains(&child) {
                     if graph.is_goal(child) {
                         return Some(child);
-                    }
+                    } 
                     
                     visited.insert(child);
                     frontier.push(HeapElement::new(

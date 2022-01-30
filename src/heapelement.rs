@@ -26,12 +26,14 @@ impl<T> Eq for HeapElement<T> {}
 
 impl<T> PartialOrd for HeapElement<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        // reverse order
         Some(other.cost.cmp(&self.cost))
     }
 }
 
 impl<T> Ord for HeapElement<T> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // reverse order
         other.cost.cmp(&self.cost)
     }
 }
