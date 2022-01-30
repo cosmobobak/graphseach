@@ -1,6 +1,8 @@
+use std::cmp::Reverse;
 use std::collections::{HashSet, HashMap, BinaryHeap};
 
-use crate::{graph::WeightedGraph, graphsearcher::WeightedGraphSearcher};
+use crate::graph::HeuristicGraph;
+use crate::{graph::WeightedGraph, graphsearcher::ComplexGraphSearcher};
 
 use crate::heapelement::HeapElement;
 
@@ -33,7 +35,7 @@ impl<G: WeightedGraph> Default for BestFirstSearch<G> {
     }
 }
 
-impl<G: WeightedGraph> WeightedGraphSearcher<G> for BestFirstSearch<G> {
+impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSearch<G> {
     fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node> {
         self.visited.clear();
         self.parents.clear();
@@ -41,10 +43,10 @@ impl<G: WeightedGraph> WeightedGraphSearcher<G> for BestFirstSearch<G> {
 
         self.visited.insert(root);
         let mut frontier = BinaryHeap::new();
-        frontier.push(HeapElement::new(root, 0));
+        frontier.push(Reverse(HeapElement::new(root, 0)));
 
         while let Some(best_next_node) = frontier.pop() {
-            let best_next_node = *best_next_node.node();
+            let best_next_node = *best_next_node.0.node();
             for n in graph.children(best_next_node) {
                 if !self.is_visited(n) {
                     if graph.is_goal(n) {
@@ -54,9 +56,9 @@ impl<G: WeightedGraph> WeightedGraphSearcher<G> for BestFirstSearch<G> {
                     
                     self.visited.insert(n);
                     self.parents.insert(n, best_next_node);
-                    frontier.push(HeapElement::new(
+                    frontier.push(Reverse(HeapElement::new(
                         n, 
-                        graph.edge_weight(best_next_node, n)));
+                        graph.heuristic(n))));
                 }
             }
             self.max_frontier = std::cmp::max(self.max_frontier, frontier.len());
@@ -82,7 +84,7 @@ impl<G: WeightedGraph> WeightedGraphSearcher<G> for BestFirstSearch<G> {
                     visited.insert(n);
                     frontier.push(HeapElement::new(
                         n, 
-                        graph.edge_weight(best_next_node, n)));
+                        graph.heuristic(n)));
                 }
             }
         }

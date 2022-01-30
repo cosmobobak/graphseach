@@ -5,6 +5,8 @@
     clippy::cargo,
 )]
 
+use graph::HeuristicGraph;
+
 mod heapelement;
 pub mod graph;
 pub mod bfs;
@@ -43,8 +45,8 @@ pub fn gamut<G: graph::Graph>(game: &G) {
     );
 }
 
-pub fn weighted_gamut<G: graph::WeightedGraph>(game: &G) {
-    use crate::graphsearcher::WeightedGraphSearcher;
+pub fn complex_gamut<G: graph::WeightedGraph + HeuristicGraph>(game: &G) {
+    use crate::graphsearcher::ComplexGraphSearcher;
     let mut bestfirst = bestfirst::BestFirstSearch::new();
     println!(
         "best first search finds the solution {} \n best first search expands {} nodes. \n best first search finds the path \n{}\n", 

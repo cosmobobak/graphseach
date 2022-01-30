@@ -1,4 +1,4 @@
-use crate::graph::{Graph, WeightedGraph};
+use crate::graph::{Graph, HeuristicGraph, WeightedGraph};
 
 pub trait GraphSearcher<G: Graph> {
     fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node>;
@@ -8,7 +8,7 @@ pub trait GraphSearcher<G: Graph> {
     fn path(&self) -> Option<Vec<G::Node>>;
 }
 
-pub trait WeightedGraphSearcher<G: WeightedGraph> {
+pub trait ComplexGraphSearcher<G: WeightedGraph + HeuristicGraph> {
     fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node>;
     fn search(graph: &G, root: G::Node) -> Option<G::Node>;
     fn nodes_visited(&self) -> usize;

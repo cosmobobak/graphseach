@@ -1,6 +1,6 @@
 use std::{hash::Hash, fmt::Display};
 
-use crate::graph::{Graph, WeightedGraph};
+use crate::graph::{Graph, WeightedGraph, HeuristicGraph};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub struct ExampleNode {
@@ -101,6 +101,12 @@ impl Graph for ExampleGraph {
 
 impl WeightedGraph for ExampleGraph {
     fn edge_weight(&self, _from: Self::Node, _to: Self::Node) -> i64 {
+        1
+    }
+}
+
+impl HeuristicGraph for ExampleGraph {
+    fn heuristic(&self, _node: Self::Node) -> i64 {
         1
     }
 }

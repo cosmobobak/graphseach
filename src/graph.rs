@@ -16,3 +16,8 @@ pub trait Graph {
 pub trait WeightedGraph: Graph {
     fn edge_weight(&self, from: Self::Node, to: Self::Node) -> i64;
 }
+
+#[allow(clippy::module_name_repetitions)]
+pub trait HeuristicGraph: Graph {
+    fn heuristic(&self, node: Self::Node) -> i64;
+}
