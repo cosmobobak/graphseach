@@ -64,7 +64,7 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for AStar<G> {
                     self.visited.insert(child);
                     frontier.push(HeapElement::new(
                         child,
-                        graph.heuristic(child) + graph.edge_weight(best_next_node, child),
+                        graph.heuristic(child).saturating_add(graph.edge_weight(best_next_node, child)),
                     ));
                 }
             }
