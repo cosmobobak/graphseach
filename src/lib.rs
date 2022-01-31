@@ -15,6 +15,7 @@ pub mod graphsearcher;
 pub mod perft;
 mod examplegraph;
 pub mod bestfirst;
+pub mod astar;
 
 pub fn gamut<G: graph::Graph>(game: &G) {
     use crate::graphsearcher::GraphSearcher;

@@ -5,14 +5,14 @@ use crate::{graph::WeightedGraph, graphsearcher::ComplexGraphSearcher};
 
 use crate::heapelement::HeapElement;
 
-pub struct BestFirstSearch<G: WeightedGraph + HeuristicGraph> {
+pub struct AStar<G: WeightedGraph + HeuristicGraph> {
     visited: HashSet<G::Node>,
     parents: HashMap<G::Node, G::Node>,
     max_frontier: usize,
     solution: Option<G::Node>
 }
 
-impl<G: WeightedGraph + HeuristicGraph> BestFirstSearch<G> {
+impl<G: WeightedGraph + HeuristicGraph> AStar<G> {
     #[must_use] 
     pub fn new() -> Self {
         Self {
@@ -28,13 +28,13 @@ impl<G: WeightedGraph + HeuristicGraph> BestFirstSearch<G> {
     }
 }
 
-impl<G: WeightedGraph + HeuristicGraph> Default for BestFirstSearch<G> {
+impl<G: WeightedGraph + HeuristicGraph> Default for AStar<G> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSearch<G> {
+impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for AStar<G> {
     fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node> {
         self.visited.clear();
         self.parents.clear();
@@ -42,7 +42,7 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
         let mut frontier = BinaryHeap::new();
 
         self.visited.insert(root);
-        frontier.push(HeapElement::new(root, graph.heuristic(root)));
+        frontier.push(HeapElement::new(root, 0));
 
         while let Some(best_next_node) = frontier.pop() {
             let best_next_node = *best_next_node.node();
@@ -58,7 +58,8 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
                     self.visited.insert(child);
                     frontier.push(HeapElement::new(
                         child, 
-                        graph.heuristic(child)));
+                        graph.heuristic(child) + graph.edge_weight(best_next_node, child)
+                    ));
                 }
             }
             self.max_frontier = std::cmp::max(self.max_frontier, frontier.len());
@@ -84,7 +85,8 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
                     visited.insert(child);
                     frontier.push(HeapElement::new(
                         child, 
-                        graph.heuristic(child)));
+                        graph.heuristic(child) + graph.edge_weight(best_next_node, child)
+                    ));
                 }
             }
         }
@@ -121,9 +123,9 @@ mod tests {
     use crate::graphsearcher::ComplexGraphSearcher;
 
     #[test]
-    fn test_best_first_search() {
+    fn test_astar() {
         let graph = get_example_graph();
-        let mut searcher = BestFirstSearch::new();
+        let mut searcher = AStar::new();
         let solution = searcher.search_tracked(&graph, graph.root());
         assert!(graph.is_goal(solution.unwrap()));
     }
