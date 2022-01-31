@@ -52,13 +52,14 @@ impl<G: WeightedGraph + HeuristicGraph> GraphSearcher<G> for AStar<G> {
 
         self.distances.insert(root, 0);
 
-        while let Some(HeapElement { node, cost }) = frontier.pop() {
+        while let Some(HeapElement { node, .. }) = frontier.pop() {
             if graph.is_goal(node) {
                 self.solution = Some(node);
                 return Some(node);
             }
+            let cost_to_node = self.distances[&node];
             for child in graph.children(node) {
-                let cost_to_child = cost + graph.edge_weight(node, child);
+                let cost_to_child = cost_to_node + graph.edge_weight(node, child);
                 if cost_to_child < self.distances.get(&child).copied().unwrap_or(i64::MAX) {
                     self.parents.insert(child, node);
                     self.distances.insert(child, cost_to_child);
