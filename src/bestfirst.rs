@@ -116,7 +116,7 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::examplegraph::{get_example_graph, ExampleGraph};
+    use crate::examplegraph::get_example_graph;
     use crate::graph::Graph;
     use crate::graphsearcher::ComplexGraphSearcher;
 
@@ -124,7 +124,7 @@ mod tests {
     fn test_best_first_search() {
         let graph = get_example_graph();
         let mut searcher = BestFirstSearch::new();
-        let solution = searcher.search_tracked(&graph, ExampleGraph::root());
+        let solution = searcher.search_tracked(&graph, graph.root());
         assert!(graph.is_goal(solution.unwrap()));
     }
 }

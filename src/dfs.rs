@@ -164,14 +164,14 @@ impl<G: Graph> GraphSearcher<G> for IterDeepening<G> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph::Graph, dfs::{DFS, IterDeepening}, graphsearcher::GraphSearcher, examplegraph::{self, ExampleGraph}};
+    use crate::{graph::Graph, dfs::{DFS, IterDeepening}, graphsearcher::GraphSearcher, examplegraph};
     use crate::examplegraph::ExampleNode;
 
     #[test]
     fn check_dfs() {
         let graph = examplegraph::get_example_graph();
         let mut searcher = DFS::new();
-        let found = searcher.search_tracked(&graph, ExampleGraph::root());
+        let found = searcher.search_tracked(&graph, graph.root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
         assert_eq!(searcher.path().unwrap(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
@@ -181,7 +181,7 @@ mod tests {
     fn check_iterative_deepening_dfs() {
         let graph = examplegraph::get_example_graph();
         let mut searcher = IterDeepening::new();
-        let found = searcher.search_tracked(&graph, ExampleGraph::root());
+        let found = searcher.search_tracked(&graph, graph.root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
         assert_eq!(searcher.path().unwrap(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);

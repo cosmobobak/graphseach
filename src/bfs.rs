@@ -101,7 +101,7 @@ impl<G: Graph> GraphSearcher<G> for BFS<G> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph::Graph, bfs::BFS, examplegraph::{self, ExampleGraph}};
+    use crate::{graph::Graph, bfs::BFS, examplegraph};
     use crate::graphsearcher::GraphSearcher;
     use crate::examplegraph::ExampleNode;
 
@@ -109,7 +109,7 @@ mod tests {
     fn check_bfs() {
         let graph = examplegraph::get_example_graph();
         let mut searcher = BFS::new();
-        let found = searcher.search_tracked(&graph, ExampleGraph::root());
+        let found = searcher.search_tracked(&graph, graph.root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
         assert_eq!(searcher.path().unwrap(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);

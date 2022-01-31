@@ -74,7 +74,7 @@ impl Graph for ExampleGraph {
     type Node = ExampleNode;
     type Edge = ExampleEdge;
 
-    fn root() -> Self::Node {
+    fn root(&self) -> Self::Node {
         ExampleNode::new(8)
     }
 

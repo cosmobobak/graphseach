@@ -6,7 +6,7 @@ pub trait Graph {
     type Node: Copy + Eq + Hash + Display + Debug;
     type Edge: Copy + Eq + Hash + Display + Debug;
 
-    fn root() -> Self::Node;
+    fn root(&self) -> Self::Node;
     fn children(&self, node: Self::Node) -> Vec<Self::Node>;
     fn edges(&self, node: Self::Node) -> Vec<Self::Edge>;
     fn is_goal(&self, node: Self::Node) -> bool;

@@ -12,12 +12,12 @@ pub fn perft<G: Graph>(graph: &G, node: G::Node, depth: usize) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph::Graph, examplegraph::{get_example_graph, ExampleGraph}, perft::perft};
+    use crate::{graph::Graph, examplegraph::get_example_graph, perft::perft};
 
     #[test]
     fn depth1() {
         let graph = get_example_graph();
-        let node_count = perft(&graph, ExampleGraph::root(), 1);
+        let node_count = perft(&graph, graph.root(), 1);
         assert_eq!(node_count, 2);
     }
 }
