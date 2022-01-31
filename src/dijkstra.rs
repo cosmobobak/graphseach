@@ -1,25 +1,24 @@
 use std::collections::{BinaryHeap, HashMap, HashSet};
 
-use crate::graph::HeuristicGraph;
 use crate::graphsearcher::GraphSearcher;
 use crate::heapelement::HeapElement;
 use crate::graph::WeightedGraph;
 use std::fmt::Debug;
 
-pub struct AStar<G: WeightedGraph + HeuristicGraph> {
+pub struct Dijkstra<G: WeightedGraph> {
     visited: HashSet<G::Node>,
     parents: HashMap<G::Node, G::Node>,
     max_frontier: usize,
     solution: Option<G::Node>,
 }
 
-impl<G: WeightedGraph + HeuristicGraph> Debug for AStar<G> {
+impl<G: WeightedGraph> Debug for Dijkstra<G> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "AStar")
+        write!(f, "Dijkstra")
     }
 }
 
-impl<G: WeightedGraph + HeuristicGraph> AStar<G> {
+impl<G: WeightedGraph> Dijkstra<G> {
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -35,13 +34,13 @@ impl<G: WeightedGraph + HeuristicGraph> AStar<G> {
     }
 }
 
-impl<G: WeightedGraph + HeuristicGraph> Default for AStar<G> {
+impl<G: WeightedGraph> Default for Dijkstra<G> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<G: WeightedGraph + HeuristicGraph> GraphSearcher<G> for AStar<G> {
+impl<G: WeightedGraph> GraphSearcher<G> for Dijkstra<G> {
     fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node> {
         self.visited.clear();
         self.parents.clear();
@@ -65,7 +64,7 @@ impl<G: WeightedGraph + HeuristicGraph> GraphSearcher<G> for AStar<G> {
                     self.visited.insert(child);
                     frontier.push(HeapElement::new(
                         child,
-                        graph.heuristic(child).saturating_add(graph.edge_weight(best_next_node, child)),
+                        graph.edge_weight(best_next_node, child),
                     ));
                 }
             }
@@ -92,7 +91,7 @@ impl<G: WeightedGraph + HeuristicGraph> GraphSearcher<G> for AStar<G> {
                     visited.insert(child);
                     frontier.push(HeapElement::new(
                         child,
-                        graph.heuristic(child) + graph.edge_weight(best_next_node, child),
+                        graph.edge_weight(best_next_node, child),
                     ));
                 }
             }
@@ -132,7 +131,7 @@ mod tests {
     #[test]
     fn basic() {
         let graph = get_example_graph();
-        let mut searcher = AStar::new();
+        let mut searcher = Dijkstra::new();
         let found = searcher.search_tracked(&graph, graph.root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));

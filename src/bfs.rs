@@ -106,7 +106,7 @@ mod tests {
     use crate::{bfs::BFS, examplegraph, graph::Graph};
 
     #[test]
-    fn check_bfs() {
+    fn basic() {
         let graph = examplegraph::get_example_graph();
         let mut searcher = BFS::new();
         let found = searcher.search_tracked(&graph, graph.root());

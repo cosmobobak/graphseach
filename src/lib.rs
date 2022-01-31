@@ -11,6 +11,7 @@ pub mod graph;
 pub mod graphsearcher;
 mod heapelement;
 pub mod perft;
+pub mod dijkstra;
 
 pub fn gamut<G: graph::Graph>(game: &G) {
     use crate::graphsearcher::GraphSearcher;
@@ -50,7 +51,7 @@ pub fn gamut<G: graph::Graph>(game: &G) {
 }
 
 pub fn complex_gamut<G: graph::WeightedGraph + HeuristicGraph>(game: &G) {
-    use crate::graphsearcher::ComplexGraphSearcher;
+    use crate::graphsearcher::GraphSearcher;
     let mut bestfirst = bestfirst::BestFirstSearch::new();
     println!(
         "best first search finds the solution {} \n best first search expands {} nodes. \n best first search finds the path \n{}\n", 

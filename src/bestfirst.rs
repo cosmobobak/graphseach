@@ -2,24 +2,24 @@ use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::fmt::Debug;
 
 use crate::graph::HeuristicGraph;
-use crate::{graph::WeightedGraph, graphsearcher::ComplexGraphSearcher};
+use crate::graphsearcher::GraphSearcher;
 
 use crate::heapelement::HeapElement;
 
-pub struct BestFirstSearch<G: WeightedGraph + HeuristicGraph> {
+pub struct BestFirstSearch<G: HeuristicGraph> {
     visited: HashSet<G::Node>,
     parents: HashMap<G::Node, G::Node>,
     max_frontier: usize,
     solution: Option<G::Node>,
 }
 
-impl<G: WeightedGraph + HeuristicGraph> Debug for BestFirstSearch<G> {
+impl<G: HeuristicGraph> Debug for BestFirstSearch<G> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "BestFirstSearch")
     }
 }
 
-impl<G: WeightedGraph + HeuristicGraph> BestFirstSearch<G> {
+impl<G: HeuristicGraph> BestFirstSearch<G> {
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -35,13 +35,13 @@ impl<G: WeightedGraph + HeuristicGraph> BestFirstSearch<G> {
     }
 }
 
-impl<G: WeightedGraph + HeuristicGraph> Default for BestFirstSearch<G> {
+impl<G: HeuristicGraph> Default for BestFirstSearch<G> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSearch<G> {
+impl<G: HeuristicGraph> GraphSearcher<G> for BestFirstSearch<G> {
     fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node> {
         self.visited.clear();
         self.parents.clear();
@@ -121,10 +121,9 @@ mod tests {
     use super::*;
     use crate::examplegraph::get_example_graph;
     use crate::graph::Graph;
-    use crate::graphsearcher::ComplexGraphSearcher;
 
     #[test]
-    fn test_best_first_search() {
+    fn basic() {
         let graph = get_example_graph();
         let mut searcher = BestFirstSearch::new();
         let solution = searcher.search_tracked(&graph, graph.root());

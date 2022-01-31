@@ -173,7 +173,7 @@ mod tests {
     };
 
     #[test]
-    fn check_dfs() {
+    fn basic() {
         let graph = examplegraph::get_example_graph();
         let mut searcher = DFS::new();
         let found = searcher.search_tracked(&graph, graph.root());
@@ -191,7 +191,7 @@ mod tests {
     }
 
     #[test]
-    fn check_iterative_deepening_dfs() {
+    fn basic_itdeep() {
         let graph = examplegraph::get_example_graph();
         let mut searcher = IterDeepening::new();
         let found = searcher.search_tracked(&graph, graph.root());
