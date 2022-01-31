@@ -1,6 +1,6 @@
 #![warn(clippy::module_name_repetitions)]
 
-use std::{hash::Hash, fmt::Display, fmt::Debug};
+use std::{fmt::Debug, fmt::Display, hash::Hash};
 
 pub trait Graph {
     type Node: Copy + Eq + Hash + Display + Debug;
@@ -17,7 +17,10 @@ pub trait WeightedGraph: Graph {
     fn edge_weight(&self, from: Self::Node, to: Self::Node) -> i64;
 
     fn path_cost(&self, path: &[Self::Node]) -> i64 {
-        path.iter().zip(path.iter().skip(1)).map(|(a, b)| self.edge_weight(*a, *b)).sum()
+        path.iter()
+            .zip(path.iter().skip(1))
+            .map(|(a, b)| self.edge_weight(*a, *b))
+            .sum()
     }
 }
 

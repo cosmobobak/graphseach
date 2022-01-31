@@ -1,4 +1,4 @@
-use std::collections::{HashSet, HashMap, BinaryHeap};
+use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::fmt::Debug;
 
 use crate::graph::HeuristicGraph;
@@ -10,7 +10,7 @@ pub struct BestFirstSearch<G: WeightedGraph + HeuristicGraph> {
     visited: HashSet<G::Node>,
     parents: HashMap<G::Node, G::Node>,
     max_frontier: usize,
-    solution: Option<G::Node>
+    solution: Option<G::Node>,
 }
 
 impl<G: WeightedGraph + HeuristicGraph> Debug for BestFirstSearch<G> {
@@ -20,13 +20,13 @@ impl<G: WeightedGraph + HeuristicGraph> Debug for BestFirstSearch<G> {
 }
 
 impl<G: WeightedGraph + HeuristicGraph> BestFirstSearch<G> {
-    #[must_use] 
+    #[must_use]
     pub fn new() -> Self {
         Self {
             visited: HashSet::new(),
             parents: HashMap::new(),
             max_frontier: 1,
-            solution: None
+            solution: None,
         }
     }
 
@@ -56,16 +56,14 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
             for child in graph.children(best_next_node) {
                 if !self.is_visited(child) {
                     self.parents.insert(child, best_next_node);
-                    
+
                     if graph.is_goal(child) {
                         self.solution = Some(child);
                         return Some(child);
-                    } 
-                    
+                    }
+
                     self.visited.insert(child);
-                    frontier.push(HeapElement::new(
-                        child, 
-                        graph.heuristic(child)));
+                    frontier.push(HeapElement::new(child, graph.heuristic(child)));
                 }
             }
             self.max_frontier = std::cmp::max(self.max_frontier, frontier.len());
@@ -86,12 +84,10 @@ impl<G: WeightedGraph + HeuristicGraph> ComplexGraphSearcher<G> for BestFirstSea
                 if !visited.contains(&child) {
                     if graph.is_goal(child) {
                         return Some(child);
-                    } 
-                    
+                    }
+
                     visited.insert(child);
-                    frontier.push(HeapElement::new(
-                        child, 
-                        graph.heuristic(child)));
+                    frontier.push(HeapElement::new(child, graph.heuristic(child)));
                 }
             }
         }

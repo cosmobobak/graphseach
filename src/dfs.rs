@@ -4,15 +4,15 @@ use crate::{graph::Graph, graphsearcher::GraphSearcher};
 
 pub struct DFS<G: Graph> {
     visited: HashSet<G::Node>,
-    path: Vec<G::Node>
+    path: Vec<G::Node>,
 }
 
 impl<G: Graph> DFS<G> {
-    #[must_use] 
+    #[must_use]
     pub fn new() -> Self {
         Self {
             visited: HashSet::new(),
-            path: Vec::new()
+            path: Vec::new(),
         }
     }
 
@@ -75,7 +75,7 @@ pub struct IterDeepening<G: Graph> {
 }
 
 impl<G: Graph> IterDeepening<G> {
-    #[must_use] 
+    #[must_use]
     pub fn new() -> Self {
         Self {
             visited: HashSet::new(),
@@ -164,8 +164,13 @@ impl<G: Graph> GraphSearcher<G> for IterDeepening<G> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph::Graph, dfs::{DFS, IterDeepening}, graphsearcher::GraphSearcher, examplegraph};
     use crate::examplegraph::ExampleNode;
+    use crate::{
+        dfs::{IterDeepening, DFS},
+        examplegraph,
+        graph::Graph,
+        graphsearcher::GraphSearcher,
+    };
 
     #[test]
     fn check_dfs() {
@@ -174,7 +179,15 @@ mod tests {
         let found = searcher.search_tracked(&graph, graph.root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
-        assert_eq!(searcher.path().unwrap(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
+        assert_eq!(
+            searcher.path().unwrap(),
+            &[
+                ExampleNode::new(8),
+                ExampleNode::new(3),
+                ExampleNode::new(6),
+                ExampleNode::new(7)
+            ]
+        );
     }
 
     #[test]
@@ -184,6 +197,14 @@ mod tests {
         let found = searcher.search_tracked(&graph, graph.root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
-        assert_eq!(searcher.path().unwrap(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
+        assert_eq!(
+            searcher.path().unwrap(),
+            &[
+                ExampleNode::new(8),
+                ExampleNode::new(3),
+                ExampleNode::new(6),
+                ExampleNode::new(7)
+            ]
+        );
     }
 }

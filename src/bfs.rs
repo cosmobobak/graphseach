@@ -1,4 +1,4 @@
-use std::collections::{VecDeque, HashSet, HashMap};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::{graph::Graph, graphsearcher::GraphSearcher};
 
@@ -6,21 +6,21 @@ pub struct BFS<G: Graph> {
     visited: HashSet<G::Node>,
     parents: HashMap<G::Node, G::Node>,
     solution: Option<G::Node>,
-    max_frontier: usize
+    max_frontier: usize,
 }
 
 impl<G: Graph> BFS<G> {
-    #[must_use] 
+    #[must_use]
     pub fn new() -> Self {
         Self {
             visited: HashSet::new(),
             parents: HashMap::new(),
             solution: None,
-            max_frontier: 1
+            max_frontier: 1,
         }
     }
 
-    #[must_use] 
+    #[must_use]
     pub fn max_frontier(&self) -> usize {
         self.max_frontier
     }
@@ -101,9 +101,9 @@ impl<G: Graph> GraphSearcher<G> for BFS<G> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph::Graph, bfs::BFS, examplegraph};
-    use crate::graphsearcher::GraphSearcher;
     use crate::examplegraph::ExampleNode;
+    use crate::graphsearcher::GraphSearcher;
+    use crate::{bfs::BFS, examplegraph, graph::Graph};
 
     #[test]
     fn check_bfs() {
@@ -112,7 +112,14 @@ mod tests {
         let found = searcher.search_tracked(&graph, graph.root());
         assert!(found.is_some());
         assert!(graph.is_goal(found.unwrap()));
-        assert_eq!(searcher.path().unwrap(), &[ExampleNode::new(8), ExampleNode::new(3), ExampleNode::new(6), ExampleNode::new(7)]);
+        assert_eq!(
+            searcher.path().unwrap(),
+            &[
+                ExampleNode::new(8),
+                ExampleNode::new(3),
+                ExampleNode::new(6),
+                ExampleNode::new(7)
+            ]
+        );
     }
 }
-

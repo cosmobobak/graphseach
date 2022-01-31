@@ -1,10 +1,10 @@
-use std::{hash::Hash, fmt::Display};
+use std::{fmt::Display, hash::Hash};
 
-use crate::graph::{Graph, WeightedGraph, HeuristicGraph};
+use crate::graph::{Graph, HeuristicGraph, WeightedGraph};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub struct ExampleNode {
-    id: usize
+    id: usize,
 }
 
 impl ExampleNode {
@@ -22,7 +22,7 @@ impl Display for ExampleNode {
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash)]
 pub struct ExampleEdge {
     from_id: usize,
-    to_id: usize
+    to_id: usize,
 }
 
 impl ExampleEdge {
@@ -41,7 +41,7 @@ impl Display for ExampleEdge {
 pub struct ExampleGraph {
     nodes: Vec<ExampleNode>,
     edges: Vec<ExampleEdge>,
-    goal_id: usize
+    goal_id: usize,
 }
 
 impl ExampleGraph {
@@ -50,7 +50,7 @@ impl ExampleGraph {
         Self {
             nodes: Vec::new(),
             edges: Vec::new(),
-            goal_id: 0
+            goal_id: 0,
         }
     }
 
@@ -81,7 +81,11 @@ impl Graph for ExampleGraph {
     fn children(&self, node: Self::Node) -> Vec<Self::Node> {
         self.nodes
             .iter()
-            .filter(move |n| self.edges.iter().any(|e| e.from_id == node.id && e.to_id == n.id))
+            .filter(move |n| {
+                self.edges
+                    .iter()
+                    .any(|e| e.from_id == node.id && e.to_id == n.id)
+            })
             .copied()
             .collect()
     }

@@ -1,9 +1,7 @@
-
-
 #[derive(Clone, Copy, Debug)]
 pub struct HeapElement<T> {
     node: T,
-    cost: i64
+    cost: i64,
 }
 
 impl<T> HeapElement<T> {

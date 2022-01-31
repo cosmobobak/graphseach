@@ -1,21 +1,16 @@
-#![warn(
-    clippy::all,
-    clippy::pedantic,
-    clippy::nursery,
-    clippy::cargo,
-)]
+#![warn(clippy::all, clippy::pedantic, clippy::nursery, clippy::cargo)]
 
 use graph::HeuristicGraph;
 
-mod heapelement;
-pub mod graph;
+pub mod astar;
+pub mod bestfirst;
 pub mod bfs;
 pub mod dfs;
-pub mod graphsearcher;
-pub mod perft;
 mod examplegraph;
-pub mod bestfirst;
-pub mod astar;
+pub mod graph;
+pub mod graphsearcher;
+mod heapelement;
+pub mod perft;
 
 pub fn gamut<G: graph::Graph>(game: &G) {
     use crate::graphsearcher::GraphSearcher;
@@ -31,11 +26,19 @@ pub fn gamut<G: graph::Graph>(game: &G) {
         breadthfirst.max_frontier()
     );
     println!(
-        "dfs finds the solution {} \n dfs expands {} nodes. \n dfs finds the path \n{}\n", 
-        depthfirst.search_tracked(game, game.root())
+        "dfs finds the solution {} \n dfs expands {} nodes. \n dfs finds the path \n{}\n",
+        depthfirst
+            .search_tracked(game, game.root())
             .map_or_else(|| "[NO SOLUTION]".to_string(), |s| format!("{}", s)),
         depthfirst.nodes_visited(),
-        depthfirst.path().map_or_else(|| "no path".to_string(), |p| p.iter().map(|s| format!("{}", s)).collect::<Vec<_>>().join("\n")),
+        depthfirst.path().map_or_else(
+            || "no path".to_string(),
+            |p| p
+                .iter()
+                .map(|s| format!("{}", s))
+                .collect::<Vec<_>>()
+                .join("\n")
+        ),
     );
     println!(
         "iterative deepening dfs finds the solution {} \n iterative deepening dfs expands {} nodes. \n iterative deepening dfs finds the path \n{}\n", 

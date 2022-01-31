@@ -1,4 +1,3 @@
-
 use crate::graph::Graph;
 
 pub fn perft<G: Graph>(graph: &G, node: G::Node, depth: usize) -> usize {
@@ -7,12 +6,15 @@ pub fn perft<G: Graph>(graph: &G, node: G::Node, depth: usize) -> usize {
     if depth == 0 || no_children {
         return 1;
     }
-    children.iter().map(|c| perft(graph, *c, depth - 1)).sum::<usize>()
+    children
+        .iter()
+        .map(|c| perft(graph, *c, depth - 1))
+        .sum::<usize>()
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{graph::Graph, examplegraph::get_example_graph, perft::perft};
+    use crate::{examplegraph::get_example_graph, graph::Graph, perft::perft};
 
     #[test]
     fn depth1() {
