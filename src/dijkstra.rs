@@ -1,9 +1,9 @@
-use std::collections::{BinaryHeap, HashMap, hash_map::Entry::Vacant};
+use std::collections::{BinaryHeap, HashMap};
+use std::fmt::Debug;
 
+use crate::graph::WeightedGraph;
 use crate::graphsearcher::GraphSearcher;
 use crate::heapelement::HeapElement;
-use crate::graph::WeightedGraph;
-use std::fmt::Debug;
 
 pub struct Dijkstra<G: WeightedGraph> {
     distances: HashMap<G::Node, i64>,
@@ -40,33 +40,43 @@ impl<G: WeightedGraph> Default for Dijkstra<G> {
     }
 }
 
+// procedure uniform_cost_search(start) is
+//     node ← start
+//     frontier ← priority queue containing node only
+//     explored ← empty set
+//     do
+//         if frontier is empty then
+//             return failure
+//         node ← frontier.pop()
+//         if node is a goal state then
+//             return solution(node)
+//         explored.add(node)
+//         for each of node's neighbors n do
+//             if n is not in explored and not in frontier then
+//                 frontier.add(n)
+//             else if n is in frontier with higher cost
+//                 replace existing node with n
+
 impl<G: WeightedGraph> GraphSearcher<G> for Dijkstra<G> {
     fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node> {
         self.distances.clear();
         self.parents.clear();
         self.max_frontier = 1;
-        let mut frontier = BinaryHeap::new();
 
-        self.distances.insert(root, 0);
+        let mut frontier = BinaryHeap::new();
         frontier.push(HeapElement::new(root, 0));
 
-        while let Some(best_next_node) = frontier.pop() {
-            let best_next_node = *best_next_node.node();
-            let d_to_next = self.distances[&best_next_node];
-            for child in graph.children(best_next_node) {
-                if let Vacant(e) = self.distances.entry(child) {
-                    self.parents.insert(child, best_next_node);
-
-                    if graph.is_goal(child) {
-                        self.solution = Some(child);
-                        return Some(child);
-                    }
-
-                    e.insert(d_to_next + graph.edge_weight(best_next_node, child));
-                    frontier.push(HeapElement::new(
-                        child,
-                        self.distances[&child],
-                    ));
+        while let Some(HeapElement { node, cost }) = frontier.pop() {
+            if graph.is_goal(node) {
+                self.solution = Some(node);
+                return Some(node);
+            }
+            for child in graph.children(node) {
+                let cost_to_child = cost + graph.edge_weight(node, child);
+                if cost_to_child < self.distances.get(&child).copied().unwrap_or(i64::MAX) {
+                    self.parents.insert(child, node);
+                    self.distances.insert(child, cost_to_child);
+                    frontier.push(HeapElement::new(child, cost_to_child));
                 }
             }
             self.max_frontier = std::cmp::max(self.max_frontier, frontier.len());
@@ -81,20 +91,15 @@ impl<G: WeightedGraph> GraphSearcher<G> for Dijkstra<G> {
         distances.insert(root, 0);
         frontier.push(HeapElement::new(root, 0));
 
-        while let Some(best_next_node) = frontier.pop() {
-            let best_next_node = *best_next_node.node();
-            let d_to_next = distances[&best_next_node];
-            for child in graph.children(best_next_node) {
-                if let Vacant(e) = distances.entry(child) {
-                    if graph.is_goal(child) {
-                        return Some(child);
-                    }
-
-                    e.insert(d_to_next + graph.edge_weight(best_next_node, child));
-                    frontier.push(HeapElement::new(
-                        child,
-                        distances[&child],
-                    ));
+        while let Some(HeapElement { node, cost }) = frontier.pop() {
+            if graph.is_goal(node) {
+                return Some(node);
+            }
+            for child in graph.children(node) {
+                let cost_to_child = cost + graph.edge_weight(node, child);
+                if cost_to_child < distances.get(&child).copied().unwrap_or(i64::MAX) {
+                    distances.insert(child, cost_to_child);
+                    frontier.push(HeapElement::new(child, cost_to_child));
                 }
             }
         }

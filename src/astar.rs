@@ -1,11 +1,10 @@
 use std::collections::{BinaryHeap, HashMap};
 
 use crate::graph::HeuristicGraph;
+use crate::graph::WeightedGraph;
 use crate::graphsearcher::GraphSearcher;
 use crate::heapelement::HeapElement;
-use crate::graph::WeightedGraph;
 use std::fmt::Debug;
-use std::collections::hash_map::Entry::Vacant;
 
 pub struct AStar<G: WeightedGraph + HeuristicGraph> {
     distances: HashMap<G::Node, i64>,
@@ -47,27 +46,23 @@ impl<G: WeightedGraph + HeuristicGraph> GraphSearcher<G> for AStar<G> {
         self.distances.clear();
         self.parents.clear();
         self.max_frontier = 1;
-        let mut frontier = BinaryHeap::new();
 
-        self.distances.insert(root, 0);
+        let mut frontier = BinaryHeap::new();
         frontier.push(HeapElement::new(root, 0));
 
-        while let Some(best_next_node) = frontier.pop() {
-            let best_next_node = *best_next_node.node();
-            let d_to_next = self.distances[&best_next_node];
-            for child in graph.children(best_next_node) {
-                if let Vacant(e) = self.distances.entry(child) {
-                    self.parents.insert(child, best_next_node);
-
-                    if graph.is_goal(child) {
-                        self.solution = Some(child);
-                        return Some(child);
-                    }
-
-                    e.insert(d_to_next + graph.edge_weight(best_next_node, child));
+        while let Some(HeapElement { node, cost }) = frontier.pop() {
+            if graph.is_goal(node) {
+                self.solution = Some(node);
+                return Some(node);
+            }
+            for child in graph.children(node) {
+                let cost_to_child = cost + graph.edge_weight(node, child);
+                if cost_to_child < self.distances.get(&child).copied().unwrap_or(i64::MAX) {
+                    self.parents.insert(child, node);
+                    self.distances.insert(child, cost_to_child);
                     frontier.push(HeapElement::new(
                         child,
-                        self.distances[&child] + graph.heuristic(child),
+                        cost_to_child + graph.heuristic(child),
                     ));
                 }
             }
@@ -83,20 +78,15 @@ impl<G: WeightedGraph + HeuristicGraph> GraphSearcher<G> for AStar<G> {
         distances.insert(root, 0);
         frontier.push(HeapElement::new(root, 0));
 
-        while let Some(best_next_node) = frontier.pop() {
-            let best_next_node = *best_next_node.node();
-            let d_to_next = distances[&best_next_node];
-            for child in graph.children(best_next_node) {
-                if let Vacant(e) = distances.entry(child) {
-                    if graph.is_goal(child) {
-                        return Some(child);
-                    }
-
-                    e.insert(d_to_next + graph.edge_weight(best_next_node, child));
-                    frontier.push(HeapElement::new(
-                        child,
-                        distances[&child] + graph.heuristic(child),
-                    ));
+        while let Some(HeapElement { node, cost }) = frontier.pop() {
+            if graph.is_goal(node) {
+                return Some(node);
+            }
+            for child in graph.children(node) {
+                let cost_to_child = cost + graph.edge_weight(node, child);
+                if cost_to_child < distances.get(&child).copied().unwrap_or(i64::MAX) {
+                    distances.insert(child, cost_to_child);
+                    frontier.push(HeapElement::new(child, cost_to_child));
                 }
             }
         }

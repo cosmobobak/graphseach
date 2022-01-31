@@ -6,12 +6,12 @@ pub mod astar;
 pub mod bestfirst;
 pub mod bfs;
 pub mod dfs;
+pub mod dijkstra;
 mod examplegraph;
 pub mod graph;
 pub mod graphsearcher;
 mod heapelement;
 pub mod perft;
-pub mod dijkstra;
 
 pub fn gamut<G: graph::Graph>(game: &G) {
     use crate::graphsearcher::GraphSearcher;
