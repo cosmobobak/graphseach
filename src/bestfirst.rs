@@ -1,4 +1,5 @@
 use std::collections::{HashSet, HashMap, BinaryHeap};
+use std::fmt::Debug;
 
 use crate::graph::HeuristicGraph;
 use crate::{graph::WeightedGraph, graphsearcher::ComplexGraphSearcher};
@@ -10,6 +11,12 @@ pub struct BestFirstSearch<G: WeightedGraph + HeuristicGraph> {
     parents: HashMap<G::Node, G::Node>,
     max_frontier: usize,
     solution: Option<G::Node>
+}
+
+impl<G: WeightedGraph + HeuristicGraph> Debug for BestFirstSearch<G> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "BestFirstSearch")
+    }
 }
 
 impl<G: WeightedGraph + HeuristicGraph> BestFirstSearch<G> {
