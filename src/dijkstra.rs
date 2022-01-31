@@ -1,4 +1,4 @@
-use std::collections::{BinaryHeap, HashMap, HashSet};
+use std::collections::{BinaryHeap, HashMap, hash_map::Entry::Vacant};
 
 use crate::graphsearcher::GraphSearcher;
 use crate::heapelement::HeapElement;
@@ -6,7 +6,7 @@ use crate::graph::WeightedGraph;
 use std::fmt::Debug;
 
 pub struct Dijkstra<G: WeightedGraph> {
-    visited: HashSet<G::Node>,
+    distances: HashMap<G::Node, i64>,
     parents: HashMap<G::Node, G::Node>,
     max_frontier: usize,
     solution: Option<G::Node>,
@@ -22,7 +22,7 @@ impl<G: WeightedGraph> Dijkstra<G> {
     #[must_use]
     pub fn new() -> Self {
         Self {
-            visited: HashSet::new(),
+            distances: HashMap::new(),
             parents: HashMap::new(),
             max_frontier: 1,
             solution: None,
@@ -42,18 +42,19 @@ impl<G: WeightedGraph> Default for Dijkstra<G> {
 
 impl<G: WeightedGraph> GraphSearcher<G> for Dijkstra<G> {
     fn search_tracked(&mut self, graph: &G, root: G::Node) -> Option<G::Node> {
-        self.visited.clear();
+        self.distances.clear();
         self.parents.clear();
         self.max_frontier = 1;
         let mut frontier = BinaryHeap::new();
 
-        self.visited.insert(root);
+        self.distances.insert(root, 0);
         frontier.push(HeapElement::new(root, 0));
 
         while let Some(best_next_node) = frontier.pop() {
             let best_next_node = *best_next_node.node();
+            let d_to_next = self.distances[&best_next_node];
             for child in graph.children(best_next_node) {
-                if !self.is_visited(child) {
+                if let Vacant(e) = self.distances.entry(child) {
                     self.parents.insert(child, best_next_node);
 
                     if graph.is_goal(child) {
@@ -61,10 +62,10 @@ impl<G: WeightedGraph> GraphSearcher<G> for Dijkstra<G> {
                         return Some(child);
                     }
 
-                    self.visited.insert(child);
+                    e.insert(d_to_next + graph.edge_weight(best_next_node, child));
                     frontier.push(HeapElement::new(
                         child,
-                        graph.edge_weight(best_next_node, child),
+                        self.distances[&child],
                     ));
                 }
             }
@@ -74,24 +75,25 @@ impl<G: WeightedGraph> GraphSearcher<G> for Dijkstra<G> {
     }
 
     fn search(graph: &G, root: G::Node) -> Option<G::Node> {
-        let mut visited = HashSet::new();
+        let mut distances = HashMap::new();
         let mut frontier = BinaryHeap::new();
 
-        visited.insert(root);
+        distances.insert(root, 0);
         frontier.push(HeapElement::new(root, 0));
 
         while let Some(best_next_node) = frontier.pop() {
             let best_next_node = *best_next_node.node();
+            let d_to_next = distances[&best_next_node];
             for child in graph.children(best_next_node) {
-                if !visited.contains(&child) {
+                if let Vacant(e) = distances.entry(child) {
                     if graph.is_goal(child) {
                         return Some(child);
                     }
 
-                    visited.insert(child);
+                    e.insert(d_to_next + graph.edge_weight(best_next_node, child));
                     frontier.push(HeapElement::new(
                         child,
-                        graph.edge_weight(best_next_node, child),
+                        distances[&child],
                     ));
                 }
             }
@@ -100,11 +102,11 @@ impl<G: WeightedGraph> GraphSearcher<G> for Dijkstra<G> {
     }
 
     fn nodes_visited(&self) -> usize {
-        self.visited.len()
+        self.distances.len()
     }
 
     fn is_visited(&self, node: G::Node) -> bool {
-        self.visited.contains(&node)
+        self.distances.contains_key(&node)
     }
 
     fn path(&self) -> Option<Vec<G::Node>> {
