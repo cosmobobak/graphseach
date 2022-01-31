@@ -66,6 +66,8 @@ impl<G: WeightedGraph> GraphSearcher<G> for Dijkstra<G> {
         let mut frontier = BinaryHeap::new();
         frontier.push(HeapElement::new(root, 0));
 
+        self.distances.insert(root, 0);
+
         while let Some(HeapElement { node, cost }) = frontier.pop() {
             if graph.is_goal(node) {
                 self.solution = Some(node);
