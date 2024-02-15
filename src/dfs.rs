@@ -5,6 +5,7 @@ use crate::{graph::Graph, graphsearcher::GraphSearcher};
 pub struct DFS<G: Graph> {
     visited: HashSet<G::Node>,
     path: Vec<G::Node>,
+    found: bool,
 }
 
 impl<G: Graph> DFS<G> {
@@ -13,6 +14,7 @@ impl<G: Graph> DFS<G> {
         Self {
             visited: HashSet::new(),
             path: Vec::new(),
+            found: false,
         }
     }
 
@@ -32,6 +34,7 @@ impl<G: Graph> GraphSearcher<G> for DFS<G> {
         self.mark_visited(root);
         self.path.push(root);
         if graph.is_goal(root) {
+            self.found = true;
             return Some(root);
         }
         for neighbor in graph.children(root) {
@@ -64,13 +67,18 @@ impl<G: Graph> GraphSearcher<G> for DFS<G> {
     }
 
     fn path(&self) -> Option<Vec<G::Node>> {
-        Some(self.path.clone())
+        if self.found {
+            Some(self.path.clone())
+        } else {
+            None
+        }
     }
 }
 
 pub struct IterDeepening<G: Graph> {
     visited: HashSet<G::Node>,
     path: Vec<G::Node>,
+    found: bool,
     counter: usize,
 }
 
@@ -80,6 +88,7 @@ impl<G: Graph> IterDeepening<G> {
         Self {
             visited: HashSet::new(),
             path: Vec::new(),
+            found: false,
             counter: 0,
         }
     }
@@ -134,6 +143,7 @@ impl<G: Graph> GraphSearcher<G> for IterDeepening<G> {
         for depth in 0.. {
             self.path.clear();
             if let Some(node) = self.dl_search_tracked(graph, root, depth) {
+                self.found = true;
                 return Some(node);
             }
         }
@@ -158,7 +168,11 @@ impl<G: Graph> GraphSearcher<G> for IterDeepening<G> {
     }
 
     fn path(&self) -> Option<Vec<G::Node>> {
-        Some(self.path.clone())
+        if self.found {
+            Some(self.path.clone())
+        } else {
+            None
+        }
     }
 }
 
