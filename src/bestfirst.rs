@@ -30,7 +30,7 @@ impl<G: HeuristicGraph> BestFirstSearch<G> {
         }
     }
 
-    pub fn max_frontier(&self) -> usize {
+    pub const fn max_frontier(&self) -> usize {
         self.max_frontier
     }
 }

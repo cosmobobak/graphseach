@@ -21,7 +21,7 @@ impl<G: Graph> BFS<G> {
     }
 
     #[must_use]
-    pub fn max_frontier(&self) -> usize {
+    pub const fn max_frontier(&self) -> usize {
         self.max_frontier
     }
 
