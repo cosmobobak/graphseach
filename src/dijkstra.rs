@@ -32,6 +32,10 @@ impl<G: WeightedGraph> Dijkstra<G> {
     pub const fn max_frontier(&self) -> usize {
         self.max_frontier
     }
+
+    pub const fn distances(&self) -> &HashMap<G::Node, i64> {
+        &self.distances
+    }
 }
 
 impl<G: WeightedGraph> Default for Dijkstra<G> {
